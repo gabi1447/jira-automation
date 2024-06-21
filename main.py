@@ -15,8 +15,8 @@ def create_jira_ticket():
     if request.is_json:
         data = request.get_json()
         issue_comment = data.get('comment', {}).get('body')
-        description = data.get('issue', {}).get('title')
-        title = data.get('issue', {}).get('body')
+        title = data.get('issue', {}).get('title')
+        description = data.get('issue', {}).get('body')
 
     auth = HTTPBasicAuth(email, api_token)
 
@@ -32,7 +32,7 @@ def create_jira_ticket():
             {
             "content": [
                 {
-                    "text": title,
+                    "text": description,
                     "type": "text"
                 }
             ],
@@ -48,7 +48,7 @@ def create_jira_ticket():
         "project": {
             "key": "TES"
         },
-        "summary": description,
+        "summary": title,
         },
         "update": {}
     } )
