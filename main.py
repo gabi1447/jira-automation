@@ -14,6 +14,7 @@ def create_jira_ticket():
 
     if request.is_json:
         data = request.get_json()
+        issue_comment = data.get('comment', {}).get('body')
 
     auth = HTTPBasicAuth(email, api_token)
 
@@ -52,7 +53,7 @@ def create_jira_ticket():
 
     
     
-    if data.get('comment', {}).get('body') == "/jira":
+    if issue_comment == "/jira":
         response = requests.request(
             "POST",
             url,
