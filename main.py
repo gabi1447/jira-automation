@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 import requests
 from requests.auth import HTTPBasicAuth
 import json
@@ -11,6 +11,9 @@ def create_jira_ticket():
     url = os.getenv("URL")
     email = os.getenv("EMAIL")
     api_token = os.getenv("API_TOKEN")
+
+    if request.is_json:
+        data = request.get_json()
 
     auth = HTTPBasicAuth(email, api_token)
 
@@ -47,15 +50,21 @@ def create_jira_ticket():
         "update": {}
     } )
 
-    response = requests.request(
-        "POST",
-        url,
-        data=payload,
-        headers=headers,
-        auth=auth
-    )
+    
+    
+    if data.get('comment', {}).get('body') == "/jira":
+        response = requests.request(
+            "POST",
+            url,
+            data=payload,
+            headers=headers,
+            auth=auth
+        )
 
-    return json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": "))
+        return json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": "))
+    
+    else:
+        return "Error"
     
 if __name__ == '__main__':
     app.run("0.0.0.0", port=5000)
