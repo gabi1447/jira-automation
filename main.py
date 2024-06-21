@@ -1,10 +1,61 @@
 from flask import Flask
+import requests
+from requests.auth import HTTPBasicAuth
+import json
+import os
 
 app = Flask(__name__)
 
-@app.route('/')
-def hello_world():
-    return "Hello, World!"
+@app.route('/createjira', methods=['POST'])
+def create_jira_ticket():
+    url = os.getenv("URL")
+    email = os.getenv("EMAIL")
+    api_token = os.getenv("API_TOKEN")
 
+    auth = HTTPBasicAuth(email, api_token)
+
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+
+    payload = json.dumps( {
+    "fields": {
+        "description": {
+            "content": [
+            {
+            "content": [
+                {
+                    "text": "My first Jira Ticket",
+                    "type": "text"
+                }
+            ],
+            "type": "paragraph"
+            }
+        ],
+        "type": "doc",
+        "version": 1
+        },
+        "issuetype": {
+            "id": "10000"
+        },
+        "project": {
+            "key": "TES"
+        },
+        "summary": "My first Jira Ticket",
+        },
+        "update": {}
+    } )
+
+    response = requests.request(
+        "POST",
+        url,
+        data=payload,
+        headers=headers,
+        auth=auth
+    )
+
+    return json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": "))
+    
 if __name__ == '__main__':
-    app.run("0.0.0.0")
+    app.run("0.0.0.0", port=5000)
