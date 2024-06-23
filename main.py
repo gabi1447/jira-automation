@@ -53,8 +53,6 @@ def create_jira_ticket():
         "update": {}
     } )
 
-    
-    
     if issue_comment == "/jira":
         response = requests.request(
             "POST",
